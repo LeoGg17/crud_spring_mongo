@@ -3,8 +3,7 @@ package com.leogg.crud_leonardog.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.leogg.crud_leonardog.models.Producto;
 import com.leogg.crud_leonardog.repository.ProductoRepository;
 
@@ -25,23 +23,25 @@ import com.leogg.crud_leonardog.repository.ProductoRepository;
 public class ProductoController {
 
     @Autowired
-    private ProductoRepository productosDAO;
+    private ProductoRepository repository;
 
-    @PostMapping
-    public ResponseEntity<Producto> create(@RequestBody Producto productos){
-        return new ResponseEntity<Producto>(productosDAO.insert(productos), HttpStatus.CREATED);
-    }
-    @GetMapping("/")
-    public ResponseEntity<List<Producto>> readAll(){
-        return new ResponseEntity<List<Producto>>(productosDAO.findAll(), HttpStatus.ACCEPTED);
-    }
-    @PutMapping
-    public ResponseEntity<Producto> update(@RequestBody Producto productos){
-        return new ResponseEntity<Producto>(productosDAO.save(productos), HttpStatus.OK);
-    }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id){
-        productosDAO.deleteById(id);
-        return new ResponseEntity(null, HttpStatus.OK);
-    }
-    }
+	@PostMapping("/product")
+	public Producto create(@Validated @RequestBody Producto p) {
+		return repository.insert(p);
+	}
+
+	@GetMapping("/")
+	public List<Producto> readAll() {
+		return repository.findAll();
+	}
+
+	@PutMapping("/product/{id}")
+	public Producto update(@PathVariable String id, @Validated @RequestBody Producto p) {
+		return repository.save(p);
+	}
+
+	@DeleteMapping("/product/{id}")
+	public void delete(@PathVariable String id) {
+		repository.deleteById(id);
+	}
+}
